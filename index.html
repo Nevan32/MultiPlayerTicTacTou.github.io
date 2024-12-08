@@ -68,8 +68,8 @@
     }
 
     .cell {
-      width: 60px;
-      height: 60px;
+      width: 100px;
+      height: 100px;
       background-color: #333333;
       border: 2px solid black;
       display: flex;
@@ -168,8 +168,8 @@
 
       boardElement.innerHTML = "";
       boardElement.className = "board";
-      boardElement.style.gridTemplateColumns = `repeat(${boardSize}, 60px)`;
-      boardElement.style.gridTemplateRows = `repeat(${boardSize}, 60px)`;
+      boardElement.style.gridTemplateColumns = `repeat(${boardSize}, 100px)`;
+      boardElement.style.gridTemplateRows = `repeat(${boardSize}, 100px)`;
 
       renderBoard();
       statusElement.textContent = "Pemain 1, giliran Anda!";
@@ -233,31 +233,32 @@
       if (board.every((row, idx) => row[boardSize - 1 - idx] === player)) return [[0, boardSize - 1], [boardSize - 1, 0]];
       return null;
     }
+    
+function drawWinningLine(line, player) {
+  const cellSize = 100; // Sesuaikan dengan ukuran board
+  const [start, end] = line;
+  const startX = start[1] * cellSize + cellSize / 2;
+  const startY = start[0] * cellSize + cellSize / 2;
+  const endX = end[1] * cellSize + cellSize / 2;
+  const endY = end[0] * cellSize + cellSize / 2;
 
-    function drawWinningLine(line, player) {
-      const [start, end] = line;
-      const cellSize = 60;
-      const startX = start[1] * cellSize + cellSize / 2;
-      const startY = start[0] * cellSize + cellSize / 2;
-      const endX = end[1] * cellSize + cellSize / 2;
-      const endY = end[0] * cellSize + cellSize / 2;
+  const length = Math.sqrt((endX - startX) ** 2 + (endY - startY) ** 2);
+  const angle = Math.atan2(endY - startY, endX - startX) * (180 / Math.PI);
 
-      const length = Math.sqrt((endX - startX) ** 2 + (endY - startY) ** 2);
-      const angle = Math.atan2(endY - startY, endX - startX) * (180 / Math.PI);
+  const lineElement = document.createElement("div");
+  lineElement.classList.add("winning-line");
+  lineElement.style.width = `${length}px`;
+  lineElement.style.height = "8px"; // Ketebalan garis
+  lineElement.style.backgroundColor = player === "X" ? "red" : "blue";
+  lineElement.style.position = "absolute";
+  lineElement.style.transform = `rotate(${angle}deg)`;
+  lineElement.style.left = `${startX}px`;
+  lineElement.style.top = `${startY}px`;
+  lineElement.style.transformOrigin = "0 50%";
 
-      const lineElement = document.createElement("div");
-      lineElement.classList.add("winning-line");
-      lineElement.style.width = `${length}px`;
-      lineElement.style.height = "4px";
-      lineElement.style.backgroundColor = player === "X" ? "red" : "blue";
-      lineElement.style.position = "absolute";
-      lineElement.style.transform = `rotate(${angle}deg)`;
-      lineElement.style.left = `${startX}px`;
-      lineElement.style.top = `${startY}px`;
-      lineElement.style.transformOrigin = "0 50%";
+  boardElement.appendChild(lineElement);
+}
 
-      boardElement.appendChild(lineElement);
-    }
 
     function isDraw() {
       return board.flat().every(cell => cell);
